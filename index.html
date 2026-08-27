@@ -1,0 +1,1624 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>Dimensi Tiga — Pembahasan Interaktif 3D</title>
+
+<style>
+/* =========================================================
+   GLOBAL STYLES & RESET
+========================================================= */
+*{
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body{
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: #eef2f7;
+    color: #1f2937;
+    line-height: 1.6;
+}
+
+/* =========================================================
+   NAVBAR & HEADER
+========================================================= */
+header{
+    background: #1e293b;
+    color: white;
+    padding: 14px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 3px 12px rgba(0,0,0,.18);
+}
+
+.nav-container{
+    max-width: 1200px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand{
+    font-size: 19px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.nav-controls{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-btn{
+    background: rgba(255,255,255,0.12);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 7px 13px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.nav-btn:hover{
+    background: rgba(255,255,255,0.25);
+}
+
+select.soal-select{
+    background: #0f172a;
+    color: white;
+    border: 1px solid rgba(255,255,255,0.25);
+    padding: 7px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+}
+
+/* =========================================================
+   LAYOUT & CARDS
+========================================================= */
+.main-wrap{
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 15px 30px;
+}
+
+.card{
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 22px;
+    box-shadow: 0 5px 22px rgba(0,0,0,0.08);
+}
+
+/* =========================================================
+   MENU UTAMA / DASHBOARD
+========================================================= */
+#menuPage{
+    display: block;
+}
+
+.hero{
+    text-align: center;
+    padding: 10px 10px 24px;
+}
+
+.hero h1{
+    margin: 0 0 8px;
+    font-size: 26px;
+    color: #0f172a;
+}
+
+.hero p{
+    margin: 0;
+    color: #64748b;
+    font-size: 15px;
+}
+
+.menu-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 16px;
+    margin-top: 15px;
+}
+
+.menu-item{
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 18px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.menu-item:hover{
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    border-color: #3b82f6;
+    background: #ffffff;
+}
+
+.menu-item-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.badge{
+    background: #e0e7ff;
+    color: #3730a3;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+}
+
+.menu-item h3{
+    margin: 0 0 6px;
+    font-size: 17px;
+    color: #1e293b;
+}
+
+.menu-item p{
+    margin: 0;
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.menu-item-footer{
+    margin-top: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    font-weight: bold;
+    color: #2563eb;
+}
+
+/* =========================================================
+   HALAMAN PEMBAHASAN / VIEWER
+========================================================= */
+#viewerPage{
+    display: none;
+}
+
+.viewer-layout{
+    display: grid;
+    grid-template-columns: 1fr 430px;
+    gap: 20px;
+}
+
+@media(max-width: 950px){
+    .viewer-layout{
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Canvas 3D Box */
+.canvas-card{
+    background: white;
+    border-radius: 18px;
+    padding: 16px;
+    box-shadow: 0 5px 22px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+}
+
+.canvas-wrapper{
+    position: relative;
+    width: 100%;
+    height: 480px;
+    background: #fcfcfd;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+canvas{
+    width: 100%;
+    height: 100%;
+    display: block;
+    touch-action: none;
+}
+
+.canvas-toolbar{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    gap: 10px;
+}
+
+.zoom-group{
+    display: flex;
+    gap: 8px;
+}
+
+.tool-btn{
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    color: #334155;
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.15s;
+}
+
+.tool-btn:hover{
+    background: #e2e8f0;
+}
+
+.hint-text{
+    font-size: 12px;
+    color: #64748b;
+    text-align: right;
+}
+
+/* Panel Pembahasan */
+.panel-card{
+    background: white;
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 5px 22px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.soal-summary{
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 16px;
+}
+
+.soal-summary-title{
+    font-size: 13px;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.soal-summary-body{
+    font-size: 13.5px;
+    color: #334155;
+    line-height: 1.55;
+}
+
+.info-content{
+    background: #f8fafc;
+    border-radius: 14px;
+    padding: 18px;
+    min-height: 240px;
+    border: 1px solid #e2e8f0;
+    line-height: 1.65;
+}
+
+.step-title{
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 12px;
+}
+
+.formula{
+    background: #e2e8f0;
+    padding: 9px 12px;
+    margin: 8px 0;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 15px;
+    color: #0f172a;
+}
+
+.note-box{
+    background: #fffbeb;
+    border-left: 4px solid #f59e0b;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin: 10px 0;
+}
+
+.answer-box{
+    background: #dcfce7;
+    border: 1px solid #86efac;
+    color: #14532d;
+    padding: 14px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 800;
+    margin-top: 10px;
+}
+
+/* Step Navigation */
+.step-nav{
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.nav-action-btn{
+    flex: 1;
+    background: #1e293b;
+    color: white;
+    border: 0;
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.15s;
+}
+
+.nav-action-btn:hover:not(:disabled){
+    background: #334155;
+}
+
+.nav-action-btn:disabled{
+    background: #cbd5e1;
+    cursor: not-allowed;
+}
+
+.progress-text{
+    text-align: center;
+    color: #64748b;
+    font-size: 13px;
+    margin-top: 10px;
+    font-weight: 600;
+}
+
+/* Responsive adjustments */
+@media(max-width: 600px){
+    .canvas-wrapper{
+        height: 380px;
+    }
+    .hero h1{
+        font-size: 22px;
+    }
+    .card{
+        padding: 16px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =========================================================
+     NAVBAR
+========================================================= -->
+<header>
+    <div class="nav-container">
+        <div class="brand" onclick="showMenu()">
+            <span>📐</span> <span>Dimensi Tiga 3D</span>
+        </div>
+        <div class="nav-controls">
+            <select id="soalDropdown" class="soal-select" onchange="pilihSoal(this.value)">
+                <option value="-1">☰ Pilih Nomor Soal</option>
+                <option value="0">No. 1 — Kubus (Jarak P ke BDG)</option>
+                <option value="1">No. 2 — Balok (Jarak P ke ABCD)</option>
+                <option value="2">No. 3 — Limas Segiempat (Jarak P ke ABCD)</option>
+                <option value="3">No. 4 — Prisma Segitiga (Jarak P ke ABED)</option>
+                <option value="4">No. 5 — Tabung (Jarak P ke Alas)</option>
+                <option value="5">No. 6 — Kerucut (Jarak P ke Alas)</option>
+                <option value="6">No. 7 — Prisma Segi Enam (Jarak P ke Alas)</option>
+            </select>
+            <button class="nav-btn" onclick="showMenu()">Menu</button>
+        </div>
+    </div>
+</header>
+
+<div class="main-wrap">
+
+<!-- =========================================================
+     MENU UTAMA / DAFTAR SOAL
+========================================================= -->
+<div id="menuPage">
+    <div class="card">
+        <div class="hero">
+            <h1>Koleksi Pembahasan Interaktif Dimensi Tiga</h1>
+            <p>Eksplorasi visual 3D, putar bangun ruang secara bebas, dan pelajari tahapan pembuktian jarak titik ke bidang secara runtut.</p>
+        </div>
+
+        <div class="menu-grid">
+
+            <div class="menu-item" onclick="bukaSoal(0)">
+                <div>
+                    <div class="menu-item-header">
+                        <span class="badge">Kubus</span>
+                        <span style="font-size:12px; color:#64748b;">Nomor 1</span>
+                    </div>
+                    <h3>Jarak Titik P ke Bidang BDG</h3>
+                    <p>Kubus ABCD.EFGH rusuk 12 cm. P' pada AC dengan AP'=3√2 cm, PP'=3 cm. Hitung jarak titik P ke bidang BDG.</p>
+                </div>
+                <div class="menu-item-footer">
+                    <span>Hasil: 3√3 cm</span>
+                    <span>Buka Soal →</span>
+                </div>
+            </div>
+
+            <div class="menu-item" onclick="bukaSoal(1)">
+                <div>
+                    <div class="menu-item-header">
+                        <span class="badge">Balok</span>
+                        <span style="font-size:12px; color:#64748b;">Nomor 2</span>
+                    </div>
+                    <h3>Jarak Titik P ke Bidang ABCD</h3>
+                    <p>Balok ABCD.EFGH ukuran 12×9×8 cm. AP'=5 cm pada diagonal AC, EP=√41 cm. Tentukan jarak P ke alas.</p>
+                </div>
+                <div class="menu-item-footer">
+                    <span>Hasil: 4 cm</span>
+                    <span>Buka Soal →</span>
+                </div>
+            </div>
+
+            <div class="menu-item" onclick="bukaSoal(2)">
+                <div>
+                    <div class="menu-item-header">
+                        <span class="badge">Limas Segiempat</span>
+                        <span style="font-size:12px; color:#64748b;">Nomor 3</span>
+                    </div>
+                    <h3>Jarak Titik P ke Bidang ABCD</h3>
+                    <p>Limas beraturan T.ABCD alas 12 cm, tinggi 10 cm. AP'=3√2 cm, TP=3√6 cm. Tentukan jarak P ke alas limas.</p>
+                </div>
+                <div class="menu-item-footer">
+                    <span>Hasil: 4 cm</span>
+                    <span>Buka Soal →</span>
+                </div>
+            </div>
+
+            <div class="menu-item" onclick="bukaSoal(3)">
+                <div>
+                    <div class="menu-item-header">
+                        <span class="badge">Prisma Segitiga</span>
+                        <span style="font-size:12px; color:#64748b;">Nomor 4</span>
+                    </div>
+                    <h3>Jarak Titik P ke Bidang ABED</h3>
+                    <p>Prisma tegak ABC.DEF (siku-siku di B, AB=6, BC=8, tinggi=12). BP'=√45, CP=√61. Hitung jarak P ke bidang ABED.</p>
+                </div>
+                <div class="menu-item-footer">
+                    <span>Hasil: 4 cm</span>
+                    <span>Buka Soal →</span>
+                </div>
+            </div>
+
+            <div class="menu-item" onclick="bukaSoal(4)">
+                <div>
+                    <div class="menu-item-header">
+                        <span class="badge">Tabung</span>
+                        <span style="font-size:12px; color:#64748b;">Nomor 5</span>
+                    </div>
+                    <h3>Jarak Titik P ke Bidang Alas</h3>
+                    <p>Tabung jari-jari 5 cm, tinggi 12 cm. A pada lingkaran alas, AP'=6 cm, AP=10 cm. Tentukan jarak P ke bidang alas.</p>
+                </div>
+                <div class="menu-item-footer">
+                    <span>Hasil: 8 cm</span>
+                    <span>Buka Soal →</span>
+                </div>
+            </div>
+
+            <div class="menu-item" onclick="bukaSoal(5)">
+                <div>
+                    <div class="menu-item-header">
+                        <span class="badge">Kerucut</span>
+                        <span style="font-size:12px; color:#64748b;">Nomor 6</span>
+                    </div>
+                    <h3>Jarak Titik P ke Bidang Alas</h3>
+                    <p>Kerucut OA=10 cm, OT=12 cm. A, P', O segaris dengan OP'=2 cm, AP=10 cm. Hitung jarak titik P ke bidang alas.</p>
+                </div>
+                <div class="menu-item-footer">
+                    <span>Hasil: 6 cm</span>
+                    <span>Buka Soal →</span>
+                </div>
+            </div>
+
+            <div class="menu-item" onclick="bukaSoal(6)">
+                <div>
+                    <div class="menu-item-header">
+                        <span class="badge">Prisma Segi Enam</span>
+                        <span style="font-size:12px; color:#64748b;">Nomor 7</span>
+                    </div>
+                    <h3>Jarak Titik P ke Bidang ABCDEF</h3>
+                    <p>Prisma segi enam beraturan sisi 4 cm, tinggi 10 cm. P' titik tengah OM, AP=8 cm. Hitung jarak titik P ke bidang alas.</p>
+                </div>
+                <div class="menu-item-footer">
+                    <span>Hasil: 3√5 cm</span>
+                    <span>Buka Soal →</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- =========================================================
+     VIEWER PEMBAHASAN INTERAKTIF
+========================================================= -->
+<div id="viewerPage">
+    <div class="viewer-layout">
+
+        <!-- 3D Canvas -->
+        <div class="canvas-card">
+            <div class="canvas-wrapper">
+                <canvas id="mainCanvas"></canvas>
+            </div>
+            <div class="canvas-toolbar">
+                <div class="zoom-group">
+                    <button class="tool-btn" onclick="zoomOut()">−</button>
+                    <button class="tool-btn" onclick="zoomIn()">＋</button>
+                    <button class="tool-btn" onclick="resetCamera()" style="font-size:13px;">Reset 🔄</button>
+                </div>
+                <div class="hint-text">
+                    👆 Geser untuk memutar objek 3D
+                </div>
+            </div>
+        </div>
+
+        <!-- Detail Pembahasan & Langkah -->
+        <div class="panel-card">
+            <div>
+                <div class="soal-summary">
+                    <div class="soal-summary-title" id="soalHeaderTitle">
+                        Ringkasan Soal
+                    </div>
+                    <div class="soal-summary-body" id="soalHeaderDesc"></div>
+                </div>
+
+                <div class="info-content">
+                    <div class="step-title" id="stepTitle"></div>
+                    <div id="stepBody"></div>
+                </div>
+            </div>
+
+            <div>
+                <div class="step-nav">
+                    <button id="prevBtn" class="nav-action-btn" onclick="prevStep()">← Sebelumnya</button>
+                    <button id="nextBtn" class="nav-action-btn" onclick="nextStep()">Berikutnya →</button>
+                </div>
+                <div class="progress-text" id="progressIndicator"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</div>
+
+<script>
+/* =========================================================
+   STATE & DATA MODEL LENGKAP 7 SOAL
+========================================================= */
+const r3 = Math.sqrt(3);
+const r5 = Math.sqrt(5);
+
+const soalDatabase = [
+    /* =====================================================
+       SOAL 1: KUBUS BDG
+    ===================================================== */
+    {
+        id: 1,
+        title: "Nomor 1 — Jarak Titik P ke Bidang BDG",
+        shortDesc: "Kubus ABCD.EFGH rusuk 12 cm. P' pada AC dengan AP'=3√2 cm, PP'=3 cm. Tentukan jarak P ke bidang BDG.",
+        defaultScale: 26,
+        rotX: -0.35,
+        rotY: 0.65,
+        points: {
+            A: [0,0,0], B: [12,0,0], C: [12,0,12], D: [0,0,12],
+            E: [0,12,0], F: [12,12,0], G: [12,12,12], H: [0,12,12],
+            Pp: [3,0,3], P: [3,3,3], O: [6,0,6]
+        },
+        center: [6, 6, 6],
+        drawCustom: function(ctx, pIndex, sIndex){
+            const V = this.points;
+            if(sIndex >= 4){ // Bidang BDG
+                const b = projectPoint(V.B, this.center);
+                const d = projectPoint(V.D, this.center);
+                const g = projectPoint(V.G, this.center);
+                ctx.beginPath();
+                ctx.moveTo(b.x, b.y);
+                ctx.lineTo(d.x, d.y);
+                ctx.lineTo(g.x, g.y);
+                ctx.closePath();
+                ctx.fillStyle = "rgba(220,50,50,.22)";
+                ctx.fill();
+                ctx.strokeStyle = "#a22";
+                ctx.lineWidth = 3;
+                ctx.stroke();
+            }
+
+            // Kubus Edges
+            const edges = [
+                ["A","B"],["B","C"],["C","D"],["D","A"],
+                ["E","F"],["F","G"],["G","H"],["H","E"],
+                ["A","E"],["B","F"],["C","G"],["D","H"]
+            ];
+            edges.forEach(e => draw3DLine(V[e[0]], V[e[1]], "#333", 2, false, this.center));
+
+            // Diagonal AC
+            if(sIndex >= 1) draw3DLine(V.A, V.C, "#1465c0", 3, false, this.center);
+
+            // Titik P'
+            if(sIndex >= 2){
+                draw3DDot(V.Pp, 7, "#1465c0", this.center);
+                draw3DLabel("P′", V.Pp, -15, 5, this.center);
+            }
+
+            // PP'
+            if(sIndex >= 3){
+                draw3DLine(V.Pp, V.P, "#d22", 3, true, this.center);
+                draw3DDot(V.P, 8, "#d22", this.center);
+                draw3DLabel("P", V.P, 15, -5, this.center);
+            }
+
+            // O & Segitiga bantu
+            if(sIndex >= 5){
+                draw3DDot(V.O, 7, "#7620a8", this.center);
+                draw3DLabel("O", V.O, -12, 5, this.center);
+                draw3DLine(V.O, V.Pp, "#1465c0", 4, false, this.center);
+                draw3DLine(V.Pp, V.P, "#d22", 4, false, this.center);
+            }
+
+            // OP
+            if(sIndex >= 6){
+                draw3DLine(V.O, V.P, "#7620a8", 4, false, this.center);
+                draw3DLabel("OP = 3√3 cm", [4.5,1.5,4.5], 20, -5, this.center);
+            }
+
+            // OG
+            if(sIndex >= 7){
+                draw3DLine(V.O, V.G, "#00884a", 4, false, this.center);
+                draw3DLabel("OG", [9,6,9], 12, -5, this.center);
+            }
+
+            // Labels sudut kubus
+            ["A","B","C","D","E","F","G","H"].forEach(n => {
+                draw3DDot(V[n], 4, "#222", this.center);
+                let dx = (n=="A"||n=="D"||n=="E"||n=="H") ? -10 : 10;
+                let dy = (n=="E"||n=="F"||n=="G"||n=="H") ? -8 : 16;
+                draw3DLabel(n, V[n], dx, dy, this.center);
+            });
+
+            // Labels Ukuran
+            draw3DLabel("12 cm", [6,0,0], 0, 22, this.center);
+            if(sIndex >= 2) draw3DLabel("3√2 cm", [1.5,0,1.5], -5, 20, this.center);
+            if(sIndex >= 3) draw3DLabel("3 cm", [3,1.5,3], 23, 0, this.center);
+            if(sIndex >= 5) draw3DLabel("3√2 cm", [4.5,0,4.5], 0, 20, this.center);
+        },
+        steps: [
+            {
+                title: "Langkah 1 — Cari Diagonal AC",
+                text: `<p>Alas kubus ABCD berbentuk persegi dengan sisi 12 cm. Pada segitiga ABC:</p>
+                       <div class="formula">AC = √(12² + 12²) = 12√2 cm</div>
+                       <p>Garis biru menunjukkan diagonal sisi AC.</p>`
+            },
+            {
+                title: "Langkah 2 — Tentukan Posisi P′",
+                text: `<p>Diketahui AP′ = 3√2 cm. Maka rasio perbandingannya terhadap AC:</p>
+                       <div class="formula">AP′ / AC = 3√2 / 12√2 = 1/4</div>
+                       <p>Titik P′ terletak seperempat diagonal AC dari titik A.</p>`
+            },
+            {
+                title: "Langkah 3 — Proyeksi Tegak Lurus PP′",
+                text: `<p>P′ adalah proyeksi tegak lurus P pada bidang alas ABCD:</p>
+                       <div class="formula">PP′ ⟂ bidang ABCD</div>
+                       <div class="formula">PP′ = 3 cm</div>`
+            },
+            {
+                title: "Langkah 4 — Tampilkan Bidang BDG",
+                text: `<p>Hubungkan titik B, D, dan G untuk membentuk bidang segitiga sama sisi BDG.</p>`
+            },
+            {
+                title: "Langkah 5 — Buat Segitiga Bantu OP′P",
+                text: `<p>Misalkan O adalah titik pusat bidang alas (titik tengah AC dan BD). Karena AO = 6√2 cm dan AP′ = 3√2 cm:</p>
+                       <div class="formula">OP′ = AO − AP′ = 6√2 − 3√2 = 3√2 cm</div>
+                       <p>Terbentuk segitiga siku-siku OP′P di P′.</p>`
+            },
+            {
+                title: "Langkah 6 — Gunakan Pythagoras pada △OP′P",
+                text: `<div class="formula">OP² = OP′² + PP′² = (3√2)² + 3² = 18 + 9 = 27</div>
+                       <div class="formula">OP = √27 = 3√3 cm</div>`
+            },
+            {
+                title: "Langkah 7 — Hubungan OP dengan Bidang BDG",
+                text: `<p>Titik O berada pada bidang BDG dan garis OG terletak pada bidang BDG. Pada penampang ACGE, garis OP tegak lurus OG (OP ⟂ OG).</p>
+                       <p>Karena garis OP juga tegak lurus BD, maka OP tegak lurus seluruh bidang BDG.</p>`
+            },
+            {
+                title: "🎯 Jawaban Akhir",
+                text: `<div class="answer-box">Jarak P ke bidang BDG = 3√3 cm (≈ 5,20 cm)</div>`
+            }
+        ]
+    },
+
+    /* =====================================================
+       SOAL 2: BALOK ABCD.EFGH
+    ===================================================== */
+    {
+        id: 2,
+        title: "Nomor 2 — Balok (Jarak Titik P ke Bidang ABCD)",
+        shortDesc: "Balok ABCD.EFGH: AB=12 cm, BC=9 cm, AE=8 cm. P' pada AC dengan AP'=5 cm, EP=√41 cm. Tentukan jarak P ke alas.",
+        defaultScale: 27,
+        rotX: -0.42,
+        rotY: 0.65,
+        points: {
+            A: [-6,-4,-4.5], B: [6,-4,-4.5], C: [6,-4,4.5], D: [-6,-4,4.5],
+            E: [-6,4,-4.5], F: [6,4,-4.5], G: [6,4,4.5], H: [-6,4,4.5],
+            Pp: [-2,-4,-1.5], P: [-2,0,-1.5], Q: [-2,4,-1.5]
+        },
+        center: [0,0,0],
+        drawCustom: function(ctx, pIndex, sIndex){
+            const V = this.points;
+            // Plane ABCD
+            const basePts = [V.A, V.B, V.C, V.D].map(p => projectPoint(p, this.center));
+            ctx.beginPath();
+            ctx.moveTo(basePts[0].x, basePts[0].y);
+            for(let i=1; i<4; i++) ctx.lineTo(basePts[i].x, basePts[i].y);
+            ctx.closePath();
+            ctx.fillStyle = "rgba(60,130,220,.10)";
+            ctx.fill();
+            ctx.strokeStyle = "rgba(60,130,220,.35)";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Balok Edges
+            const edges = [
+                ["A","B"],["B","C"],["C","D"],["D","A"],
+                ["E","F"],["F","G"],["G","H"],["H","E"],
+                ["A","E"],["B","F"],["C","G"],["D","H"]
+            ];
+            edges.forEach(e => draw3DLine(V[e[0]], V[e[1]], "#333", 2, false, this.center));
+            draw3DLine(V.A, V.C, "#888", 2, true, this.center);
+
+            // Titik P dan P'
+            draw3DDot(V.Pp, 6, "#111", this.center);
+            draw3DLabel("P'", V.Pp, 15, 17, this.center);
+            draw3DDot(V.P, 7, "#d22", this.center);
+            draw3DLabel("P", V.P, 15, -10, this.center);
+
+            if(sIndex >= 1) draw3DLine(V.A, V.Pp, "#1769aa", 4, false, this.center);
+            if(sIndex >= 2) draw3DLine(V.P, V.Pp, "#d22", 4, true, this.center);
+            if(sIndex >= 3) draw3DLine(V.E, V.A, "#333", 4, false, this.center);
+            if(sIndex >= 4) draw3DLine(V.E, V.P, "#7b2cbf", 4, false, this.center);
+            if(sIndex >= 5){
+                draw3DLine(V.P, V.Q, "#333", 3, true, this.center);
+                draw3DLine(V.E, V.Q, "#333", 3, true, this.center);
+            }
+            if(sIndex >= 6){
+                draw3DLine(V.E, V.Q, "#1769aa", 4, false, this.center);
+                draw3DLine(V.Q, V.P, "#d22", 4, false, this.center);
+                draw3DLine(V.E, V.P, "#7b2cbf", 4, false, this.center);
+            }
+
+            ["A","B","C","D","E","F","G","H"].forEach(name => {
+                draw3DDot(V[name], 3, "#222", this.center);
+                draw3DLabel(name, V[name], 10, 10, this.center);
+            });
+        },
+        steps: [
+            {
+                title: "Awal — Posisi P dan P'",
+                text: `<p>Titik P berada di dalam balok dan P' adalah proyeksinya pada bidang alas ABCD.</p>
+                       <div class="formula">PP' ⟂ bidang ABCD</div>`
+            },
+            {
+                title: "Langkah 1 — Panjang AP'",
+                text: `<p>P' terletak pada diagonal AC dengan panjang:</p>
+                       <div class="formula">AP' = 5 cm</div>`
+            },
+            {
+                title: "Langkah 2 — Misalkan PP' = d",
+                text: `<p>Karena PP' tegak lurus bidang ABCD, maka d = PP' adalah jarak titik P ke bidang ABCD.</p>
+                       <div class="formula">PP' = d</div>`
+            },
+            {
+                title: "Langkah 3 — Tinggi Balok",
+                text: `<p>Tinggi balok dari alas ABCD ke tutup EFGH adalah:</p>
+                       <div class="formula">AE = 8 cm</div>`
+            },
+            {
+                title: "Langkah 4 — Panjang EP",
+                text: `<div class="formula">EP = √41 cm</div>`
+            },
+            {
+                title: "Langkah 5 — Buat Garis Bantu EQ dan QP",
+                text: `<p>Proyeksikan P' ke bidang atas setinggi E menjadi titik Q. Diperoleh EQ = AP' = 5 cm dan selisih tinggi QP = 8 − d.</p>`
+            },
+            {
+                title: "Langkah 6 — Segitiga Siku-Siku EQP",
+                text: `<p>Segitiga EQP siku-siku di Q dengan sisi: EQ = 5, QP = 8 − d, dan sisi miring EP = √41.</p>`
+            },
+            {
+                title: "Langkah 7 — Teorema Pythagoras",
+                text: `<div class="formula">EP² = EQ² + QP²</div>
+                       <div class="formula">(√41)² = 5² + (8 − d)²</div>
+                       <div class="formula">41 = 25 + (8 − d)² ⇒ (8 − d)² = 16</div>
+                       <div class="formula">8 − d = 4 ⇒ d = 4 cm</div>`
+            },
+            {
+                title: "🎯 Jawaban Akhir",
+                text: `<div class="answer-box">Jarak P ke bidang ABCD = 4 cm</div>`
+            }
+        ]
+    },
+
+    /* =====================================================
+       SOAL 3: LIMAS SEGIEMPAT T.ABCD
+    ===================================================== */
+    {
+        id: 3,
+        title: "Nomor 3 — Limas Segiempat T.ABCD",
+        shortDesc: "Limas beraturan T.ABCD alas persegi 12 cm, tinggi TO=10 cm. AP'=3√2 cm pada AC, TP=3√6 cm. Tentukan jarak P ke alas.",
+        defaultScale: 28,
+        rotX: -0.48,
+        rotY: 0.65,
+        points: {
+            A: [-6,0,-6], B: [6,0,-6], C: [6,0,6], D: [-6,0,6],
+            O: [0,0,0], T: [0,10,0],
+            Pp: [-3,0,-3], P: [-3,4,-3], Q: [-3,10,-3]
+        },
+        center: [0,3,0],
+        drawCustom: function(ctx, pIndex, sIndex){
+            const V = this.points;
+            // Base
+            const basePts = [V.A, V.B, V.C, V.D].map(p => projectPoint(p, this.center));
+            ctx.beginPath();
+            ctx.moveTo(basePts[0].x, basePts[0].y);
+            for(let i=1; i<4; i++) ctx.lineTo(basePts[i].x, basePts[i].y);
+            ctx.closePath();
+            ctx.fillStyle = "rgba(60,130,220,.10)";
+            ctx.fill();
+            ctx.strokeStyle = "rgba(60,130,220,.35)";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Limas lines
+            ["A","B","C","D"].forEach((n, idx) => {
+                let next = ["B","C","D","A"][idx];
+                draw3DLine(V[n], V[next], "#333", 2, false, this.center);
+                draw3DLine(V.T, V[n], "#333", 2, false, this.center);
+            });
+            draw3DLine(V.A, V.C, "#888", 2, true, this.center);
+            draw3DLine(V.T, V.O, "#888", 2, true, this.center);
+
+            draw3DDot(V.Pp, 6, "#111", this.center);
+            draw3DDot(V.P, 8, "#d22", this.center);
+            draw3DLabel("P'", V.Pp, 19, 19, this.center);
+            draw3DLabel("P", V.P, 19, -10, this.center);
+
+            if(sIndex >= 1) draw3DLine(V.A, V.Pp, "#1769aa", 4, false, this.center);
+            if(sIndex >= 2) draw3DLine(V.O, V.Pp, "#16834b", 4, false, this.center);
+            if(sIndex >= 3) draw3DLine(V.T, V.O, "#333", 4, false, this.center);
+            if(sIndex >= 4){
+                draw3DDot(V.Q, 6, "#7620a8", this.center);
+                draw3DLabel("Q", V.Q, 18, -8, this.center);
+                draw3DLine(V.Pp, V.Q, "#333", 3, true, this.center);
+                draw3DLine(V.T, V.Q, "#1769aa", 4, false, this.center);
+            }
+            if(sIndex >= 5) draw3DLine(V.Q, V.P, "#d22", 4, true, this.center);
+            if(sIndex >= 6) draw3DLine(V.T, V.P, "#7b2cbf", 5, false, this.center);
+            if(sIndex >= 7) draw3DLine(V.P, V.Pp, "#d22", 5, true, this.center);
+
+            ["A","B","C","D","T","O"].forEach(name => {
+                draw3DDot(V[name], 3, "#222", this.center);
+                draw3DLabel(name, V[name], 10, 10, this.center);
+            });
+        },
+        steps: [
+            {
+                title: "Awal — Posisi P dan P'",
+                text: `<p>P berada di dalam limas dan PP' tegak lurus bidang alas ABCD. Jarak yang dicari adalah d = PP'.</p>`
+            },
+            {
+                title: "Langkah 1 — Tentukan AP'",
+                text: `<p>P' terletak pada diagonal AC dengan AP' = 3√2 cm.</p>`
+            },
+            {
+                title: "Langkah 2 — Hitung OP'",
+                text: `<p>Diagonal AC = 12√2 cm, sehingga AO = 6√2 cm.</p>
+                       <div class="formula">OP' = AO − AP' = 6√2 − 3√2 = 3√2 cm</div>`
+            },
+            {
+                title: "Langkah 3 — Tinggi Limas TO",
+                text: `<div class="formula">TO = 10 cm</div>`
+            },
+            {
+                title: "Langkah 4 — Buat Titik Bantu Q",
+                text: `<p>Buat titik Q setinggi T dan tepat di atas P'. Maka TQ sejajar OP' dan TQ = OP' = 3√2 cm.</p>`
+            },
+            {
+                title: "Langkah 5 — Panjang Segmen QP",
+                text: `<p>Selisih ketinggian T (dan Q) terhadap P adalah:</p>
+                       <div class="formula">QP = 10 − d</div>`
+            },
+            {
+                title: "Langkah 6 — Gunakan TP = 3√6 cm",
+                text: `<p>Segitiga TQP siku-siku di Q dengan hipotenusa TP = 3√6 cm.</p>`
+            },
+            {
+                title: "Langkah 7 — Teorema Pythagoras pada △TQP",
+                text: `<div class="formula">TP² = TQ² + QP²</div>
+                       <div class="formula">(3√6)² = (3√2)² + (10 − d)²</div>
+                       <div class="formula">54 = 18 + (10 − d)² ⇒ (10 − d)² = 36</div>
+                       <div class="formula">10 − d = 6 ⇒ d = 4 cm</div>`
+            },
+            {
+                title: "🎯 Jawaban Akhir",
+                text: `<div class="answer-box">Jarak P ke bidang ABCD = 4 cm</div>`
+            }
+        ]
+    },
+
+    /* =====================================================
+       SOAL 4: PRISMA SEGITIGA ABC.DEF
+    ===================================================== */
+    {
+        id: 4,
+        title: "Nomor 4 — Prisma Segitiga Tegak ABC.DEF",
+        shortDesc: "Prisma segitiga siku-siku ABC.DEF: AB=6 cm, BC=8 cm, tinggi=12 cm. BP'=√45 cm pada bidang ABED, CP=√61 cm. Cari jarak P ke ABED.",
+        defaultScale: 28,
+        rotX: -0.40,
+        rotY: 0.65,
+        points: {
+            A:[0,0,0], B:[6,0,0], C:[6,0,8],
+            D:[0,12,0], E:[6,12,0], F:[6,12,8],
+            Pp:[3,6,0], P:[3,6,4]
+        },
+        center: [3, 6, 4],
+        drawCustom: function(ctx, pIndex, sIndex){
+            const V = this.points;
+            // Plane ABED
+            const pts = [V.A, V.B, V.E, V.D].map(p => projectPoint(p, this.center));
+            ctx.beginPath();
+            ctx.moveTo(pts[0].x, pts[0].y);
+            for(let i=1; i<4; i++) ctx.lineTo(pts[i].x, pts[i].y);
+            ctx.closePath();
+            ctx.fillStyle = "rgba(60,120,220,.10)";
+            ctx.fill();
+            ctx.strokeStyle = "rgba(60,120,220,.35)";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Prisma Edges
+            draw3DLine(V.A, V.B, "#333", 2, false, this.center);
+            draw3DLine(V.B, V.C, "#333", 2, false, this.center);
+            draw3DLine(V.C, V.A, "#333", 2, false, this.center);
+            draw3DLine(V.D, V.E, "#333", 2, false, this.center);
+            draw3DLine(V.E, V.F, "#333", 2, false, this.center);
+            draw3DLine(V.F, V.D, "#333", 2, false, this.center);
+            draw3DLine(V.A, V.D, "#333", 2, false, this.center);
+            draw3DLine(V.B, V.E, "#333", 2, false, this.center);
+            draw3DLine(V.C, V.F, "#333", 2, false, this.center);
+
+            draw3DDot(V.Pp, 7, "#111", this.center);
+            draw3DDot(V.P, 8, "#d22", this.center);
+            draw3DLabel("P'", V.Pp, -20, 18, this.center);
+            draw3DLabel("P", V.P, 20, -10, this.center);
+
+            if(sIndex >= 2) draw3DLine(V.C, V.Pp, "#16834b", 4, true, this.center);
+            if(sIndex >= 3) draw3DLine(V.B, V.Pp, "#1769aa", 5, false, this.center);
+            if(sIndex >= 4) draw3DLine(V.Pp, V.P, "#d22", 5, true, this.center);
+            if(sIndex >= 5) draw3DLine(V.C, V.P, "#7b2cbf", 5, false, this.center);
+
+            ["A","B","C","D","E","F"].forEach(n => {
+                draw3DDot(V[n], 3, "#222", this.center);
+                draw3DLabel(n, V[n], 12, 12, this.center);
+            });
+        },
+        steps: [
+            {
+                title: "Awal — Tentukan Target",
+                text: `<p>Jarak titik P ke bidang ABED adalah panjang ruas garis PP' = d.</p>`
+            },
+            {
+                title: "Langkah 1 — Kenali Bidang ABED",
+                text: `<p>Bidang ABED adalah bidang tegak prisma tempat P' berada.</p>`
+            },
+            {
+                title: "Langkah 2 — Garis Bantu CP'",
+                text: `<p>Hubungkan C dengan P'.</p>`
+            },
+            {
+                title: "Langkah 3 — Gunakan BP' = √45 cm",
+                text: `<p>Jarak mendatar B ke P' pada bidang ABED adalah BP' = √45 cm.</p>`
+            },
+            {
+                title: "Langkah 4 — Sudut Siku-Siku di P'",
+                text: `<p>Karena PP' tegak lurus bidang ABED, maka PP' ⟂ BP'.</p>`
+            },
+            {
+                title: "Langkah 5 — Hubungkan C dengan P",
+                text: `<div class="formula">CP = √61 cm</div>`
+            },
+            {
+                title: "Langkah 6 — Bentuk Hubungan Pythagoras Ruang",
+                text: `<p>Selisih jarak C terhadap bidang ABED adalah BC = 8 cm. Selisih posisi C dan P terhadap bidang adalah 8 − d.</p>`
+            },
+            {
+                title: "Langkah 7 — Persamaan Pythagoras",
+                text: `<div class="formula">CP² = BP'² + (8 − d)²</div>
+                       <div class="formula">(√61)² = (√45)² + (8 − d)²</div>
+                       <div class="formula">61 = 45 + (8 − d)² ⇒ 16 = (8 − d)²</div>
+                       <div class="formula">8 − d = 4 ⇒ d = 4 cm</div>`
+            },
+            {
+                title: "🎯 Jawaban Akhir",
+                text: `<div class="answer-box">Jarak P ke bidang ABED = 4 cm</div>`
+            }
+        ]
+    },
+
+    /* =====================================================
+       SOAL 5: TABUNG
+    ===================================================== */
+    {
+        id: 5,
+        title: "Nomor 5 — Tabung (Jarak Titik P ke Alas)",
+        shortDesc: "Tabung jari-jari r=5 cm, tinggi t=12 cm. Titik A di lingkaran alas, AP'=6 cm, AP=10 cm. Tentukan jarak P ke alas tabung.",
+        defaultScale: 25,
+        rotX: -0.42,
+        rotY: 0.65,
+        points: {
+            A: [5, 0, 0],
+            Pp: [-1, 0, 0],
+            P: [-1, 0, 8]
+        },
+        center: [0, 0, 6],
+        drawCustom: function(ctx, pIndex, sIndex){
+            const V = this.points;
+            // Draw Tabung Circles
+            [0, 12].forEach(z => {
+                ctx.beginPath();
+                for(let i=0; i<=120; i++){
+                    let a = i/120 * Math.PI * 2;
+                    let p = projectPoint([5*Math.cos(a), 5*Math.sin(a), z], this.center);
+                    if(i===0) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
+                }
+                ctx.closePath();
+                ctx.strokeStyle = "#555";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            });
+
+            // Pillars
+            [0, Math.PI/2, Math.PI, Math.PI*1.5].forEach(a => {
+                draw3DLine([5*Math.cos(a), 5*Math.sin(a), 0], [5*Math.cos(a), 5*Math.sin(a), 12], "#555", 2, false, this.center);
+            });
+
+            draw3DLine(V.Pp, V.P, "#d62828", 4, true, this.center);
+            draw3DDot(V.P, 7, "#d62828", this.center);
+            draw3DLabel("P", V.P, 22, -7, this.center);
+            draw3DDot(V.Pp, 7, "#d62828", this.center);
+            draw3DLabel("P'", V.Pp, 20, 20, this.center);
+            draw3DDot(V.A, 5, "#111", this.center);
+            draw3DLabel("A", V.A, 18, 20, this.center);
+
+            if(sIndex >= 1) draw3DLine(V.A, V.Pp, "#1769aa", 4, false, this.center);
+            if(sIndex >= 3) draw3DLine(V.A, V.P, "#7b2cbf", 4, false, this.center);
+
+            // 2D Helper Cross Section Diagram
+            if(sIndex >= 1){
+                let left = 20, top = 20, w = 180, h = 130;
+                ctx.fillStyle = "rgba(255,255,255,.94)";
+                ctx.fillRect(left, top, w, h);
+                ctx.strokeStyle = "#ccc";
+                ctx.strokeRect(left, top, w, h);
+                ctx.font = "bold 11px Arial";
+                ctx.fillStyle = "#222";
+                ctx.fillText("Penampang A-P'-P", left+10, top+18);
+
+                let p2 = {x: left+40, y: top+40};
+                let pp2 = {x: left+40, y: top+100};
+                let a2 = {x: left+140, y: top+100};
+
+                ctx.beginPath();
+                ctx.moveTo(pp2.x, pp2.y); ctx.lineTo(a2.x, a2.y);
+                ctx.strokeStyle = "#1769aa"; ctx.lineWidth = 3; ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(p2.x, p2.y); ctx.lineTo(pp2.x, pp2.y);
+                ctx.strokeStyle = "#d62828"; ctx.lineWidth = 3; ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(a2.x, a2.y); ctx.lineTo(p2.x, p2.y);
+                ctx.strokeStyle = "#7b2cbf"; ctx.lineWidth = 3; ctx.stroke();
+
+                ctx.fillStyle = "#111";
+                ctx.fillText("P", p2.x-14, p2.y+4);
+                ctx.fillText("P'", pp2.x-14, pp2.y+15);
+                ctx.fillText("A", a2.x+6, a2.y+15);
+            }
+        },
+        steps: [
+            {
+                title: "Awal — Posisi P dan P'",
+                text: `<p>Titik P berada di dalam tabung dan P' merupakan proyeksi tegak lurus P pada bidang alas.</p>`
+            },
+            {
+                title: "Langkah 1 — Panjang AP'",
+                text: `<div class="formula">AP' = 6 cm</div>`
+            },
+            {
+                title: "Langkah 2 — Bukti Sudut Siku-Siku",
+                text: `<p>Karena PP' tegak lurus bidang alas dan AP' berada pada bidang alas, maka PP' ⟂ AP' (∠AP'P = 90°).</p>`
+            },
+            {
+                title: "Langkah 3 — Segitiga Siku-Siku △AP'P",
+                text: `<p>Diketahui hipotenusa AP = 10 cm dan alas AP' = 6 cm. Jarak yang dicari adalah d = PP'.</p>`
+            },
+            {
+                title: "Langkah 4 — Teorema Pythagoras",
+                text: `<div class="formula">AP² = AP'² + PP'²</div>
+                       <div class="formula">10² = 6² + d²</div>
+                       <div class="formula">100 = 36 + d² ⇒ d² = 64</div>
+                       <div class="formula">d = √64 = 8 cm</div>`
+            },
+            {
+                title: "🎯 Jawaban Akhir",
+                text: `<div class="answer-box">Jarak P ke bidang alas = 8 cm</div>`
+            }
+        ]
+    },
+
+    /* =====================================================
+       SOAL 6: KERUCUT
+    ===================================================== */
+    {
+        id: 6,
+        title: "Nomor 6 — Kerucut (Jarak Titik P ke Alas)",
+        shortDesc: "Kerucut OA=10 cm, OT=12 cm. A, P', O segaris dengan OP'=2 cm, AP=10 cm. Tentukan jarak P ke bidang alas.",
+        defaultScale: 25,
+        rotX: -0.45,
+        rotY: 0.65,
+        points: {
+            O: [0,0,0], T: [0,0,12], A: [10,0,0],
+            Pp: [2,0,0], P: [2,0,6]
+        },
+        center: [0,0,5],
+        drawCustom: function(ctx, pIndex, sIndex){
+            const V = this.points;
+            // Base circle
+            ctx.beginPath();
+            for(let i=0; i<=120; i++){
+                let a = i/120 * Math.PI * 2;
+                let p = projectPoint([10*Math.cos(a), 10*Math.sin(a), 0], this.center);
+                if(i===0) ctx.moveTo(p.x, p.y);
+                else ctx.lineTo(p.x, p.y);
+            }
+            ctx.closePath();
+            ctx.strokeStyle = "#555";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Generator lines
+            for(let i=0; i<8; i++){
+                let a = (i/8)*Math.PI*2;
+                draw3DLine(V.T, [10*Math.cos(a), 10*Math.sin(a), 0], "#aaa", 1.2, false, this.center);
+            }
+            draw3DLine(V.O, V.T, "#777", 2, true, this.center);
+
+            draw3DDot(V.P, 7, "#d62828", this.center);
+            draw3DLabel("P", V.P, 15, -8, this.center);
+            draw3DDot(V.Pp, 7, "#d62828", this.center);
+            draw3DLabel("P'", V.Pp, 15, 20, this.center);
+            draw3DLine(V.Pp, V.P, "#d62828", 4, true, this.center);
+
+            draw3DDot(V.O, 4, "#222", this.center); draw3DLabel("O", V.O, -15, 18, this.center);
+            draw3DDot(V.A, 4, "#222", this.center); draw3DLabel("A", V.A, 14, 20, this.center);
+            draw3DDot(V.T, 4, "#222", this.center); draw3DLabel("T", V.T, 14, -8, this.center);
+
+            if(sIndex >= 1) draw3DLine(V.A, V.O, "#555", 3, false, this.center);
+            if(sIndex >= 2) draw3DLine(V.O, V.Pp, "#1769aa", 4, false, this.center);
+            if(sIndex >= 3) draw3DLine(V.A, V.Pp, "#1769aa", 5, false, this.center);
+            if(sIndex >= 4) draw3DLine(V.A, V.P, "#7b2cbf", 4, false, this.center);
+
+            // 2D Helper Triangle
+            if(sIndex >= 4){
+                let left = 20, top = 20, w = 180, h = 130;
+                ctx.fillStyle = "rgba(255,255,255,.95)";
+                ctx.fillRect(left, top, w, h);
+                ctx.strokeStyle = "#ccc";
+                ctx.strokeRect(left, top, w, h);
+                ctx.font = "bold 11px Arial";
+                ctx.fillStyle = "#222";
+                ctx.fillText("△ Siku-siku AP'P", left+10, top+18);
+
+                let p2 = {x: left+40, y: top+40};
+                let pp2 = {x: left+40, y: top+100};
+                let a2 = {x: left+140, y: top+100};
+
+                ctx.beginPath();
+                ctx.moveTo(pp2.x, pp2.y); ctx.lineTo(a2.x, a2.y);
+                ctx.strokeStyle = "#1769aa"; ctx.lineWidth = 3; ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(p2.x, p2.y); ctx.lineTo(pp2.x, pp2.y);
+                ctx.strokeStyle = "#d62828"; ctx.lineWidth = 3; ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(a2.x, a2.y); ctx.lineTo(p2.x, p2.y);
+                ctx.strokeStyle = "#7b2cbf"; ctx.lineWidth = 3; ctx.stroke();
+
+                ctx.fillStyle = "#111";
+                ctx.fillText("P", p2.x-14, p2.y+4);
+                ctx.fillText("P'", pp2.x-14, pp2.y+15);
+                ctx.fillText("A", a2.x+6, a2.y+15);
+            }
+        },
+        steps: [
+            {
+                title: "Langkah 1 — Tentukan Jari-jari AO",
+                text: `<div class="formula">AO = 10 cm</div>`
+            },
+            {
+                title: "Langkah 2 — Jarak OP'",
+                text: `<div class="formula">OP' = 2 cm</div>`
+            },
+            {
+                title: "Langkah 3 — Hitung AP'",
+                text: `<p>Karena A, P', dan O segaris:</p>
+                       <div class="formula">AP' = AO − OP' = 10 − 2 = 8 cm</div>`
+            },
+            {
+                title: "Langkah 4 — Segitiga Siku-siku △AP'P",
+                text: `<p>AP = 10 cm, AP' = 8 cm, siku-siku di P'.</p>`
+            },
+            {
+                title: "Langkah 5 — Teorema Pythagoras",
+                text: `<div class="formula">AP² = AP'² + PP'²</div>
+                       <div class="formula">10² = 8² + d²</div>
+                       <div class="formula">100 = 64 + d² ⇒ d² = 36</div>
+                       <div class="formula">d = √36 = 6 cm</div>`
+            },
+            {
+                title: "🎯 Jawaban Akhir",
+                text: `<div class="answer-box">Jarak P ke bidang alas = 6 cm</div>`
+            }
+        ]
+    },
+
+    /* =====================================================
+       SOAL 7: PRISMA SEGI ENAM
+    ===================================================== */
+    {
+        id: 7,
+        title: "Nomor 7 — Prisma Segi Enam Beraturan",
+        shortDesc: "Prisma segi enam ABCDEF.GHIJKL: sisi 4 cm, tinggi 10 cm. P' titik tengah OM, AP=8 cm. Hitung jarak P ke bidang ABCDEF.",
+        defaultScale: 28,
+        rotX: -0.48,
+        rotY: 0.72,
+        points: {
+            A: [4,0,0], B: [2,2*r3,0], C: [-2,2*r3,0], D: [-4,0,0], E: [-2,-2*r3,0], F: [2,-2*r3,0],
+            G: [4,0,10], H: [2,2*r3,10], I: [-2,2*r3,10], J: [-4,0,10], K: [-2,-2*r3,10], L: [2,-2*r3,10],
+            O: [0,0,0], M: [0,2*r3,0], Pp: [0,r3,0], P: [0,r3,3*r5]
+        },
+        center: [0, 0, 5],
+        drawCustom: function(ctx, pIndex, sIndex){
+            const V = this.points;
+            // Base polygon
+            const baseArr = [V.A, V.B, V.C, V.D, V.E, V.F].map(p => projectPoint(p, this.center));
+            ctx.beginPath();
+            ctx.moveTo(baseArr[0].x, baseArr[0].y);
+            for(let i=1; i<baseArr.length; i++) ctx.lineTo(baseArr[i].x, baseArr[i].y);
+            ctx.closePath();
+            ctx.fillStyle = "rgba(40,120,220,.10)";
+            ctx.fill();
+            ctx.strokeStyle = "rgba(40,120,220,.35)";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Edges
+            const b = ["A","B","C","D","E","F"];
+            const t = ["G","H","I","J","K","L"];
+            for(let i=0; i<6; i++){
+                let next = (i+1)%6;
+                draw3DLine(V[b[i]], V[b[next]], "#444", 2, false, this.center);
+                draw3DLine(V[t[i]], V[t[next]], "#444", 2, false, this.center);
+                draw3DLine(V[b[i]], V[t[i]], "#444", 2, false, this.center);
+            }
+
+            draw3DDot(V.P, 8, "#d62828", this.center); draw3DLabel("P", V.P, 23, -10, this.center);
+            draw3DDot(V.Pp, 7, "#d62828", this.center); draw3DLabel("P'", V.Pp, -25, 22, this.center);
+            draw3DLine(V.Pp, V.P, "#d62828", 4, true, this.center);
+
+            if(sIndex >= 1){
+                draw3DDot(V.O, 6, "#1261b0", this.center);
+                draw3DLabel("O", V.O, -15, -15, this.center);
+                draw3DLine(V.A, V.O, "#1261b0", 3, true, this.center);
+                draw3DLine(V.O, V.B, "#1261b0", 3, true, this.center);
+            }
+            if(sIndex >= 2){
+                draw3DDot(V.M, 6, "#087f43", this.center);
+                draw3DLabel("M", V.M, 17, 21, this.center);
+                draw3DLine(V.O, V.M, "#087f43", 4, true, this.center);
+            }
+            if(sIndex >= 3) draw3DLine(V.O, V.Pp, "#8a5a00", 4, true, this.center);
+            if(sIndex >= 4) draw3DLine(V.A, V.Pp, "#1769aa", 5, false, this.center);
+            if(sIndex >= 5) draw3DLine(V.A, V.P, "#7b2cbf", 4, false, this.center);
+
+            // Labels sudut
+            b.concat(t).forEach(n => {
+                draw3DDot(V[n], 4, "#222", this.center);
+                draw3DLabel(n, V[n], 10, 10, this.center);
+            });
+        },
+        steps: [
+            {
+                title: "Langkah 1 — Tentukan Pusat O",
+                text: `<p>Alas berbentuk segi enam beraturan dengan AB = 4 cm. Pada segi enam beraturan, jari-jari AO = OB = 4 cm.</p>`
+            },
+            {
+                title: "Langkah 2 — Tentukan Titik M",
+                text: `<p>M adalah titik tengah BC (BM = 2 cm). Pada segitiga siku-siku OMB:</p>
+                       <div class="formula">OM = √(4² − 2²) = √12 = 2√3 cm</div>`
+            },
+            {
+                title: "Langkah 3 — Posisi P' pada OM",
+                text: `<p>P' adalah titik tengah OM:</p>
+                       <div class="formula">OP' = P'M = ½(2√3) = √3 cm</div>`
+            },
+            {
+                title: "Langkah 4 — Hitung Panjang AP'",
+                text: `<p>Karena AO tegak lurus OM:</p>
+                       <div class="formula">AP'² = AO² + OP'² = 4² + (√3)² = 16 + 3 = 19</div>
+                       <div class="formula">AP' = √19 cm</div>`
+            },
+            {
+                title: "Langkah 5 — Hubungkan A dengan P",
+                text: `<div class="formula">AP = 8 cm</div>`
+            },
+            {
+                title: "Langkah 6 — Sudut Siku-siku di P'",
+                text: `<p>Karena PP' tegak lurus alas, maka PP' ⟂ AP' (∠AP'P = 90°).</p>`
+            },
+            {
+                title: "Langkah 7 — Teorema Pythagoras",
+                text: `<div class="formula">AP² = AP'² + PP'²</div>
+                       <div class="formula">8² = (√19)² + PP'²</div>
+                       <div class="formula">64 = 19 + PP'² ⇒ PP'² = 45</div>
+                       <div class="formula">PP' = √45 = 3√5 cm</div>`
+            },
+            {
+                title: "🎯 Jawaban Akhir",
+                text: `<div class="answer-box">Jarak P ke bidang ABCDEF = 3√5 cm</div>`
+            }
+        ]
+    }
+];
+
+/* =========================================================
+   CANVAS & PROJECTION SYSTEM
+========================================================= */
+const canvas = document.getElementById("mainCanvas");
+const ctx = canvas.getContext("2d");
+
+let activeProblem = 0;
+let activeStep = 0;
+let scale = 26;
+let rotX = -0.4;
+let rotY = 0.65;
+let W = 0, H = 0;
+
+function projectPoint(p, center = [0,0,0]){
+    let x = p[0] - center[0];
+    let y = p[1] - center[1];
+    let z = p[2] - center[2];
+
+    const cy = Math.cos(rotY), sy = Math.sin(rotY);
+    let x1 = x * cy - z * sy;
+    let z1 = x * sy + z * cy;
+
+    const cx = Math.cos(rotX), sx = Math.sin(rotX);
+    let y1 = y * cx - z1 * sx;
+    let z2 = y * sx + z1 * cx;
+
+    const camera = 45;
+    let perspective = camera / (camera - z2);
+
+    return {
+        x: W / 2 + x1 * scale * perspective,
+        y: H / 2 - y1 * scale * perspective,
+        depth: z2
+    };
+}
+
+function draw3DLine(a, b, color="#333", width=2, dashed=false, center=[0,0,0]){
+    const p = projectPoint(a, center);
+    const q = projectPoint(b, center);
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
+    ctx.lineTo(q.x, q.y);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.setLineDash(dashed ? [6, 4] : []);
+    ctx.stroke();
+    ctx.setLineDash([]);
+}
+
+function draw3DDot(p, radius=5, color="#111", center=[0,0,0]){
+    const q = projectPoint(p, center);
+    ctx.beginPath();
+    ctx.arc(q.x, q.y, radius, 0, Math.PI*2);
+    ctx.fillStyle = color;
+    ctx.fill();
+}
+
+function draw3DLabel(text, p, dx=0, dy=0, center=[0,0,0]){
+    const q = projectPoint(p, center);
+    ctx.font = "bold 13px Arial";
+    const width = ctx.measureText(text).width;
+    const x = q.x + dx;
+    const y = q.y + dy;
+
+    ctx.fillStyle = "rgba(255,255,255,0.92)";
+    ctx.fillRect(x - width/2 - 4, y - 13, width + 8, 18);
+
+    ctx.fillStyle = "#111";
+    ctx.textAlign = "center";
+    ctx.fillText(text, x, y);
+}
+
+function renderScene(){
+    if(W <= 0 || H <= 0) return;
+    ctx.clearRect(0, 0, W, H);
+    const current = soalDatabase[activeProblem];
+    if(current && current.drawCustom){
+        current.drawCustom(ctx, activeProblem, activeStep);
+    }
+}
+
+function resizeCanvas(){
+    const rect = canvas.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = rect.width;
+    H = rect.height;
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    renderScene();
+}
+
+window.addEventListener("resize", resizeCanvas);
+
+/* =========================================================
+   INTERACTION: MOUSE & TOUCH ROTATE & ZOOM
+========================================================= */
+let dragging = false;
+let lastX = 0, lastY = 0;
+
+canvas.addEventListener("pointerdown", e => {
+    dragging = true;
+    lastX = e.clientX;
+    lastY = e.clientY;
+    try { canvas.setPointerCapture(e.pointerId); } catch(err){}
+});
+
+canvas.addEventListener("pointermove", e => {
+    if(!dragging) return;
+    const dx = e.clientX - lastX;
+    const dy = e.clientY - lastY;
+    rotY += dx * 0.01;
+    rotX += dy * 0.006;
+    rotX = Math.max(-1.3, Math.min(1.3, rotX));
+    lastX = e.clientX;
+    lastY = e.clientY;
+    renderScene();
+});
+
+canvas.addEventListener("pointerup", () => dragging = false);
+canvas.addEventListener("pointercancel", () => dragging = false);
+
+function zoomIn(){
+    scale += 2.5;
+    if(scale > 60) scale = 60;
+    renderScene();
+}
+
+function zoomOut(){
+    scale -= 2.5;
+    if(scale < 12) scale = 12;
+    renderScene();
+}
+
+function resetCamera(){
+    const current = soalDatabase[activeProblem];
+    scale = current.defaultScale;
+    rotX = current.rotX;
+    rotY = current.rotY;
+    renderScene();
+}
+
+/* =========================================================
+   NAVIGATION & UI LOGIC
+========================================================= */
+function showMenu(){
+    document.getElementById("menuPage").style.display = "block";
+    document.getElementById("viewerPage").style.display = "none";
+    document.getElementById("soalDropdown").value = "-1";
+}
+
+function bukaSoal(idx){
+    activeProblem = parseInt(idx);
+    activeStep = 0;
+
+    const prob = soalDatabase[activeProblem];
+    scale = prob.defaultScale;
+    rotX = prob.rotX;
+    rotY = prob.rotY;
+
+    document.getElementById("menuPage").style.display = "none";
+    document.getElementById("viewerPage").style.display = "block";
+    document.getElementById("soalDropdown").value = activeProblem;
+
+    document.getElementById("soalHeaderTitle").textContent = prob.title;
+    document.getElementById("soalHeaderDesc").textContent = prob.shortDesc;
+
+    setTimeout(() => {
+        resizeCanvas();
+        updateStepUI();
+    }, 50);
+}
+
+function pilihSoal(val){
+    if(val === "-1") showMenu();
+    else bukaSoal(val);
+}
+
+function updateStepUI(){
+    const prob = soalDatabase[activeProblem];
+    const stepData = prob.steps[activeStep];
+
+    document.getElementById("stepTitle").textContent = stepData.title;
+    document.getElementById("stepBody").innerHTML = stepData.text;
+    document.getElementById("progressIndicator").textContent = `Langkah ${activeStep + 1} dari ${prob.steps.length}`;
+
+    document.getElementById("prevBtn").disabled = (activeStep === 0);
+    document.getElementById("nextBtn").disabled = (activeStep === prob.steps.length - 1);
+
+    renderScene();
+}
+
+function nextStep(){
+    const prob = soalDatabase[activeProblem];
+    if(activeStep < prob.steps.length - 1){
+        activeStep++;
+        updateStepUI();
+    }
+}
+
+function prevStep(){
+    if(activeStep > 0){
+        activeStep--;
+        updateStepUI();
+    }
+}
+</script>
+
+</body>
+</html>
