@@ -1989,7 +1989,14 @@ function initUI() {
   homeBtn.innerHTML = "🏠 Menu";
   homeBtn.onclick = showHome;
   navContainer.appendChild(homeBtn);
-
+// Tombol Jarak Titik ke Bidang
+const jarakBtn = document.createElement("button");
+jarakBtn.className = "pill-btn";
+jarakBtn.textContent = "Jarak Titik ke Bidang";
+jarakBtn.onclick = () => {
+  window.location.href = "jarak-titik-bidang.html";
+};
+navContainer.appendChild(jarakBtn);
   questions.forEach((q, idx) => {
     // Header Nav Pills
     const btn = document.createElement("button");
