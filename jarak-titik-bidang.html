@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dimensi Tiga — Jarak Titik P ke Bidang BCGF</title>
+<style>
+:root{
+  --bg-body:#0b0f19;--bg-surface:#131b2e;--bg-elevated:#1e293b;
+  --bg-input:#0f172a;--text:#f8fafc;--muted:#94a3b8;--subtle:#24324f;
+  --primary:#3b82f6;--cyan:#38bdf8;--green:#22c55e;--yellow:#f59e0b;
+  --radius:18px;--shadow:0 12px 32px #0005;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg-body);color:var(--text);line-height:1.65;min-height:100vh}
+header{position:sticky;top:0;z-index:5;background:#131b2edb;backdrop-filter:blur(14px);border-bottom:1px solid var(--subtle)}
+.header{max-width:1100px;margin:auto;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-weight:850;font-size:1.08rem}.brand span{color:#a78bfa}
+.header a{color:var(--muted);text-decoration:none;font-size:.88rem;font-weight:700}
+main{max-width:1100px;margin:auto;padding:22px 16px 45px}
+.hero{text-align:center;padding:24px 12px 30px}
+.tag{display:inline-block;border:1px solid #2563eb66;background:#2563eb22;color:#93c5fd;border-radius:99px;padding:5px 13px;font-size:.8rem;font-weight:750}
+h1{font-size:clamp(1.65rem,4vw,2.3rem);line-height:1.2;margin:13px 0}
+.hero p{color:var(--muted);max-width:680px;margin:auto}
+.panel{background:var(--bg-surface);border:1px solid var(--subtle);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);margin-bottom:18px}
+h2{font-size:1.18rem;margin-bottom:12px}
+p{margin:9px 0}
+.formula{background:var(--bg-input);border:1px solid var(--subtle);padding:11px 15px;margin:11px 0;border-radius:12px;text-align:center;color:var(--cyan);font-weight:800;font-size:1.05rem}
+.info{border-left:4px solid var(--cyan);background:#0284c722;padding:13px 16px;border-radius:0 12px 12px 0;margin-top:15px;color:#dbeafe}
+.tabs{display:flex;gap:8px;background:var(--bg-input);border:1px solid var(--subtle);padding:5px;border-radius:14px;margin-bottom:16px}
+.tab{flex:1;border:0;border-radius:10px;padding:11px 8px;background:transparent;color:var(--muted);font-weight:800;cursor:pointer}
+.tab.active{background:var(--bg-elevated);color:white}
+.content-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
+.viewport{background:#020617;border:1px solid var(--subtle);border-radius:15px;padding:10px;min-width:0}
+svg{width:100%;height:auto;display:block}
+.edge{stroke:#8493b2;stroke-width:2.5;fill:none;stroke-linejoin:round}
+.face{fill:#38bdf8;fill-opacity:.14;stroke:#38bdf8;stroke-width:2}
+.measure{stroke:#f59e0b;stroke-width:4;stroke-dasharray:7 5;fill:none}
+.projection{stroke:#22c55e;stroke-width:4;fill:none}
+.point{fill:#f59e0b;stroke:white;stroke-width:1.5}
+.vertex{fill:#94a3b8}
+.svg-label{fill:#f8fafc;font-size:16px;font-weight:700}
+.svg-note{fill:#fbbf24;font-size:14px;font-weight:700}
+.step-panel{background:var(--bg-input);border:1px solid var(--subtle);border-radius:15px;padding:20px;display:flex;flex-direction:column;justify-content:space-between;min-height:330px}
+.step-title{font-size:1.13rem;font-weight:850;border-bottom:1px solid var(--subtle);padding-bottom:11px;margin-bottom:12px}
+.step-text{color:var(--muted);font-size:.95rem;flex:1}
+.step-text b{color:white}
+.answer{background:#14532d33;border:1px solid #22c55e66;color:#86efac;padding:15px;border-radius:12px;text-align:center;font-weight:850;font-size:1.2rem;margin-top:14px}
+.controls{display:flex;gap:10px;margin-top:18px}
+.controls button,.primary{border:1px solid #475569;background:var(--bg-elevated);color:white;border-radius:11px;padding:12px 14px;font-weight:800;cursor:pointer}
+.controls button{flex:1}.controls button:disabled{opacity:.35;cursor:not-allowed}
+.primary{width:100%;margin-top:14px;background:linear-gradient(135deg,var(--primary),#2563eb);border:0}
+.progress{text-align:center;color:#64748b;font-size:.82rem;margin-top:9px}
+.hidden{display:none}
+@media(max-width:760px){.content-grid{grid-template-columns:1fr}.panel{padding:16px}.step-panel{min-height:280px}.header{padding:11px 14px}}
+</style>
+</head>
+<body>
+<header><div class="header">
+  <div class="brand">📐 Dimensi<span>Tiga</span></div>
+  <a href="index.html">← Kembali ke Menu Utama</a>
+</div></header>
+
+<main>
+  <section class="hero">
+    <span class="tag">KUBUS · TINGKAT BASIC</span>
+    <h1>Jarak Titik P ke Bidang BCGF</h1>
+    <p>Pelajari cara menentukan jarak titik ke bidang menggunakan sifat tegak lurus pada kubus.</p>
+  </section>
+
+  <section id="soal" class="panel">
+    <h2>📝 Soal</h2>
+    <p>Diketahui kubus <b>ABCD.EFGH</b> memiliki panjang rusuk <b>6 cm</b>. Titik <b>P</b> terletak pada rusuk <b>AE</b> dengan jarak:</p>
+    <div class="formula">AP = 2 cm</div>
+    <p>Tentukan jarak titik <b>P</b> ke bidang <b>BCGF</b>.</p>
+    <div class="info"><b>Petunjuk:</b> Ingat bahwa jarak titik ke bidang adalah panjang ruas garis yang ditarik dari titik tersebut dan tegak lurus bidang.</div>
+    <button class="primary" onclick="showSolution()">▶ Mulai Pembahasan</button>
+  </section>
+
+  <section id="pembahasan" class="panel hidden">
+    <div class="tabs">
+      <button class="tab active" id="tabVisual" onclick="showVisual()">📐 Visualisasi</button>
+      <button class="tab" id="tabLangkah" onclick="showSteps()">🧠 Langkah Penyelesaian</button>
+    </div>
+
+    <div id="visualContent" class="content-grid">
+      <div class="viewport">
+        <h2>Model kubus</h2>
+        <svg viewBox="0 0 520 390" role="img" aria-label="Kubus dengan bidang BCGF disorot dan garis PQ tegak lurus bidang">
+          <!-- Bidang BCGF: B(270,300), C(430,230), G(430,70), F(270,140) -->
+          <polygon class="face" points="270,300 430,230 430,70 270,140"/>
+          <!-- alas -->
+          <path class="edge" d="M110 230 L270 300 L430 230 L270 160 Z"/>
+          <!-- sisi atas -->
+          <path class="edge" d="M110 70 L270 140 L430 70 L270 0 Z"/>
+          <!-- rusuk tegak -->
+          <path class="edge" d="M110 230 L110 70 M270 300 L270 140 M430 230 L430 70 M270 160 L270 0"/>
+          <!-- P pada AE dengan AP = 2 dari total 6 -->
+          <!-- Q pada BF pada ketinggian yang sama; PQ sejajar AB -->
+          <line class="measure" x1="110" y1="176.7" x2="270" y2="246.7"/>
+          <circle class="point" cx="110" cy="176.7" r="6"/>
+          <circle class="point" cx="270" cy="246.7" r="6"/>
+          <g class="svg-label">
+            <text x="88" y="250">A</text><text x="276" y="319">B</text>
+            <text x="440" y="236">C</text><text x="252" y="155">D</text>
+            <text x="88" y="62">E</text><text x="278" y="135">F</text>
+            <text x="440" y="68">G</text><text x="252" y="18">H</text>
+            <text x="88" y="166" fill="#fbbf24">P</text><text x="280" y="255" fill="#fbbf24">Q</text>
+          </g>
+          <text class="svg-note" x="115" y="202">AP = 2 cm</text>
+          <text class="svg-note" x="155" y="286">PQ = 6 cm</text>
+          <text x="333" y="180" fill="#7dd3fc" font-size="15" font-weight="700">Bidang BCGF</text>
+        </svg>
+        <p style="color:#94a3b8;font-size:.85rem">Bidang biru adalah BCGF. Garis kuning PQ merupakan garis tegak lurus dari P ke bidang tersebut.</p>
+      </div>
+      <div class="step-panel">
+        <div>
+          <div class="step-title">Inti konsep</div>
+          <div class="step-text">
+            <p>Titik <b>Q</b> adalah kaki proyeksi tegak lurus titik P pada bidang BCGF.</p>
+            <p>Karena <b>AB tegak lurus bidang BCGF</b> dan PQ sejajar AB, maka:</p>
+            <div class="formula">PQ ⟂ bidang BCGF</div>
+            <p>Dengan demikian, PQ adalah jarak titik P ke bidang BCGF.</p>
+          </div>
+          <div class="answer">Jarak = 6 cm</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="stepsContent" class="content-grid hidden">
+      <div class="viewport">
+        <h2>Ilustrasi pendukung</h2>
+        <svg viewBox="0 0 520 390" role="img" aria-label="Ilustrasi kubus dengan garis jarak PQ">
+          <polygon class="face" points="270,300 430,230 430,70 270,140"/>
+          <path class="edge" d="M110 230 L270 300 L430 230 L270 160 Z M110 70 L270 140 L430 70 L270 0 Z M110 230 L110 70 M270 300 L270 140 M430 230 L430 70 M270 160 L270 0"/>
+          <line class="measure" x1="110" y1="176.7" x2="270" y2="246.7"/>
+          <circle class="point" cx="110" cy="176.7" r="6"/><circle class="point" cx="270" cy="246.7" r="6"/>
+          <g class="svg-label">
+            <text x="88" y="250">A</text><text x="276" y="319">B</text><text x="440" y="236">C</text><text x="252" y="155">D</text>
+            <text x="88" y="62">E</text><text x="278" y="135">F</text><text x="440" y="68">G</text><text x="252" y="18">H</text>
+            <text x="88" y="166" fill="#fbbf24">P</text><text x="280" y="255" fill="#fbbf24">Q</text>
+          </g>
+          <text class="svg-note" x="155" y="286">PQ = AB</text>
+        </svg>
+      </div>
+      <div class="step-panel">
+        <div>
+          <div class="step-title" id="stepTitle">Langkah 1 — Tentukan bidang</div>
+          <div class="step-text" id="stepText"></div>
+        </div>
+        <div>
+          <div class="controls">
+            <button id="prevBtn" onclick="moveStep(-1)">← Sebelumnya</button>
+            <button id="nextBtn" onclick="moveStep(1)">Berikutnya →</button>
+          </div>
+          <div class="progress" id="progress">Langkah 1 dari 4</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const steps = [
+  {
+    title:"Langkah 1 — Kenali bidang yang dituju",
+    text:`<p>Bidang yang ditanyakan adalah <b>BCGF</b>. Bidang ini merupakan salah satu sisi tegak kubus.</p><p>Rusuk <b>AB</b> bertemu bidang tersebut di titik B.</p>`
+  },
+  {
+    title:"Langkah 2 — Gunakan sifat tegak lurus",
+    text:`<p>Pada kubus, rusuk <b>AB</b> tegak lurus terhadap <b>BC</b> dan <b>BF</b>, dua garis yang berpotongan pada bidang BCGF.</p><div class="formula">AB ⟂ bidang BCGF</div>`
+  },
+  {
+    title:"Langkah 3 — Tarik garis dari P ke bidang",
+    text:`<p>Tarik garis <b>PQ</b> dari P menuju titik Q pada rusuk BF, dengan PQ sejajar AB.</p><div class="formula">PQ ∥ AB</div><p>Karena AB tegak lurus bidang BCGF, maka PQ juga tegak lurus bidang BCGF.</p><div class="formula">PQ ⟂ bidang BCGF</div>`
+  },
+  {
+    title:"Langkah 4 — Tentukan panjang PQ",
+    text:`<p>Rusuk-rusuk kubus sama panjang. Karena PQ sejajar dan sama panjang dengan AB:</p><div class="formula">PQ = AB = 6 cm</div><div class="answer">Jarak titik P ke bidang BCGF = 6 cm</div><p>Nilai AP = 2 cm hanya menentukan posisi P pada AE. Nilai tersebut tidak mengubah jarak P ke bidang BCGF.</p>`
+  }
+];
+let stepIndex=0;
+function showSolution(){
+  document.getElementById('pembahasan').classList.remove('hidden');
+  showVisual();
+  document.getElementById('pembahasan').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function showVisual(){
+  document.getElementById('visualContent').classList.remove('hidden');
+  document.getElementById('stepsContent').classList.add('hidden');
+  document.getElementById('tabVisual').classList.add('active');
+  document.getElementById('tabLangkah').classList.remove('active');
+}
+function showSteps(){
+  document.getElementById('visualContent').classList.add('hidden');
+  document.getElementById('stepsContent').classList.remove('hidden');
+  document.getElementById('tabVisual').classList.remove('active');
+  document.getElementById('tabLangkah').classList.add('active');
+  renderStep();
+}
+function renderStep(){
+  const s=steps[stepIndex];
+  document.getElementById('stepTitle').textContent=s.title;
+  document.getElementById('stepText').innerHTML=s.text;
+  document.getElementById('progress').textContent=`Langkah ${stepIndex+1} dari ${steps.length}`;
+  document.getElementById('prevBtn').disabled=stepIndex===0;
+  document.getElementById('nextBtn').disabled=stepIndex===steps.length-1;
+}
+function moveStep(direction){
+  stepIndex=Math.max(0,Math.min(steps.length-1,stepIndex+direction));
+  renderStep();
+}
+</script>
+</body>
+</html>
